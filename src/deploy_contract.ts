@@ -16,13 +16,11 @@ if (!network || (network !== "mainnet" && network !== "testnet")) {
 const contractName = envData.TOKEN_DEPLOY_HARDCAT_NAME;
 const contractFileName = `${contractName}.sol`;
 const _delegate = envData.TOKEN_CONTRACT;
-const _initialOwner = envData.TOKEN_CONTRACT_OWNER;
 const _name = envData.TOKEN_NAME;
 const _symbol = envData.TOKEN_SYMBOL;
 
-// Manually set the gas limit (example: 1,500,000 units with a 20% buffer)
-const gasLimit = 1_500_000n * 120n / 100n; // Adjust this value based on your contract's requirements
-console.log(`Gas limit (with 20% buffer): ${gasLimit}`);
+const gasLimit = BigInt(3000000);
+console.log(`Gas limit: ${gasLimit}`);
 
 async function deployContract(network: "mainnet" | "testnet") {
   // Get the ethers configuration for the specified network
@@ -53,14 +51,17 @@ async function deployContract(network: "mainnet" | "testnet") {
       if (!ethers.isAddress(_delegate)) {
         throw new Error(`Invalid delegate address: ${_delegate}`);
       }
-      if (!ethers.isAddress(_initialOwner)) {
-        throw new Error(`Invalid initial owner address: ${_initialOwner}`);
-      }
       
   // Create a contract factory and deploy the contract
   const factory = new ethers.ContractFactory(abi, bytecode, wallet); 
   console.log("Deploying contract...");
-  const contract = await factory.deploy(_name, _symbol, _lzEndpoint, _delegate, _initialOwner , { gasLimit });
+  const contract = await factory.deploy(
+    _name,
+    _symbol,
+    _lzEndpoint,
+    _delegate,
+    { gasLimit}
+  );
 
   console.log("Waiting for deployment to be mined...");
   const receipt = await contract.deploymentTransaction()?.wait();

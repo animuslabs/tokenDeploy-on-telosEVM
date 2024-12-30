@@ -27,6 +27,11 @@ export async function compileContract(
       },
     },
     settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200,
+      },
+      evmVersion: "berlin",
       outputSelection: {
         "*": {
           "*": ["abi", "evm.bytecode.object"],
